@@ -19,7 +19,7 @@ Each type of thing, or __object__, has specific properties and functionality ass
 
 This grouping, or *encapsulation*, of properties and functionalities by object is a fundamental principle of OOP and is implemented with classes.
 ## Classes and Objects
-[Classes - Platform](https://login.codingdojo.com/m/506/12458/87321)("Code Preview ~ Shoe Class!" Pic is useful)
+[Classes - Platform](https://login.codingdojo.com/m/506/12458/87321)
 ### Class:
 #### IS
 - A class is a blueprint or a template for creating objects. It defines the properties (attributes) and methods (functions) that the objects of the class will have.
