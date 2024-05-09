@@ -225,3 +225,143 @@ print("Using repr(): ", repr(book1))
 - Debugging tools like IDEs or the Python interactive interpreter often use the `__repr__` method to display object information when inspecting variables.
 - Python built-in functions like `repr()` directly call the `__repr__` method of an object.
 - By using `__repr__`, you adhere to a convention that other developers familiar with Python will recognize. It's a standard way to represent objects
+## OOP & Dictionaries
+[OOP & Dictionaries](https://login.codingdojo.com/m/506/12458/90791)
+Why use classes instead of dictionaries or lists or both?
+- By creating classes out of our mostly useless raw data we now have access to all the associated attributes/methods of that class/instance
+- Its less memory 
+```python
+import sys
+for thing in pretendDB.people:
+    print(sys.getsizeof(thing))
+    print(sys.getsizeof(User(thing)))
+```
+- Lists of dictionaries is how or db will be returning table info to us in flask with pymysql/mysql
+- Something you will see a lot as a programmer is that key-value pair structures 
+	- often used for data coming from other sources, even from external programs written in different languages, typically in the form of JSON through an API
+- Also called:
+	- Hash-table(C#), 
+	- Maps, Hash Map(Java, C++), 
+	- Objects(JavaScript, JSON) 
+	- Associative Array (PHP) etc…
+
+We Can Refactor our `__init__` constructor to accept a dictionary as input
+```python
+# from dir import file
+from pretendDBresponse import people
+# print(people)
+
+class User:
+    def __init__(self, data):
+        self.id = data['id']
+        self.first_name = data['first_name']
+        self.last_name = data['last_name']
+        self.email = data['email']
+        self.age = data['age']
+        self.has_kids = data['has_kids']
+        self.children = data['children']
+    def __repr__(self):
+        return f"""User:(
+			first_name : {self.first_name}
+			last_name : {self.last_name}
+			email : {self.email}
+			age : {self.age}
+			has_kids : {self.has_kids}
+			children : {self.children}
+			)"""
+
+user1 = User(people[0])
+print(user1)
+```
+loop through it and call the `__init__()` constructor
+```python
+# 1 --
+for user_dict in people:
+    User(user_dict)
+# 2 --
+@classmethod
+def create_users(cls):
+# loop through people list and send each person dict to the constructor
+	for each_dict in people:
+		# print(each_dict)
+		cls(each_dict)
+```
+---
+## [Class and Static Methods - Platform](https://login.codingdojo.com/m/506/12458/87327)
+`@classmethod` & `@saticmethod` decorators offer us the opportunity to organize our code in a better way
+Functionality differences are minimal or non existent
+### @classmethod
+Function Decorators
+- defined with a decorator `@classmethod`
+- Instead of implicitly passing `self` into the method, we pass `cls`. This is reference to the class.
+Thus: class methods have no access to the instance attribute or any attribute that starts with self
+__Example__
+Create a method to print all user info OR take an argument to print just one user info
+```python
+@classmethod
+def print_info(cls, user_to_find_id = False):
+	print(f"There are {len(cls.total_users)} users in our DB.")
+	for user in cls.total_users:
+		if user_to_find_id:
+			# --------------
+			if user.id == user_to_find_id:
+			# --------------
+				user.display_info()
+		else:
+			user.display_info()
+```
+### @staticmethod
+[Class and Static Methods - Platform](https://login.codingdojo.com/m/506/12458/87327)
+- defined within the class with a decorator `@staticmethod`
+- no access to instance or class attributes
+Thus:  if we need any existing values, they need to be passed in as arguments
+__Example__
+Create a `@staticmethod` to modularize some logic
+```python
+@staticmethod
+def found_user(user, user_to_find_id):
+	if user.id == user_to_find_id:
+		return True
+	else:
+		return False
+```
+And refactor `@classmethod` `print_info()` to implement it:
+```python
+@classmethod
+def print_info(cls, user_to_find_id = False):
+	print(f"There are {len(cls.total_users)} users in our DB.")
+	for user in cls.total_users:
+		if user_to_find_id:
+			# ----------------
+			# Below implenting @staticmethod found_user()
+			if User.found_user(user,user_to_find_id):
+			# ------------
+				user.display_info()
+		else:
+			user.display_info()
+```
+
+---
+## Association Between Classes
+[Association Between Classes - Platform](https://login.codingdojo.com/m/506/12458/87329)
+Create a stand alone class to represent a post object
+__post.py__
+```python
+class Post:
+    def __init__(self, content):
+        self.content = content
+```
+Associate that class to a user without defining it as an attribute.
+__user.py__
+```python
+from post import Post
+@classmethod
+def create_post(cls, poster_id, post_content):
+	# loop though users
+	for poster in cls.all_users:
+		# find the user by id who is posting
+		if cls.found_user(poster, poster_id):
+			# add that post to list of posts attribute
+			poster.posts.append(Post(post_content))
+```
+`User.create_post(5, 'HIIIIIIIIIIIIIIII')`
